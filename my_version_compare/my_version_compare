@@ -1,0 +1,23 @@
+#!/bin/bash
+args_count=$#
+JIRA_IDS=".jiras.txt"
+REPORTS="report.html"
+
+function clean_temp_files()
+{
+    if [ -f $JIRA_IDS ]; then
+        rm $JIRA_IDS
+    fi
+
+    if [ -f $REPORTS ]; then
+        rm $REPORTS
+    fi
+}
+if [ $args_count -ne 4 ]; then
+    cvt-repo-version-compare -h
+    return
+fi
+clean_temp_files
+cvt-repo-version-compare $* |grep -oE "^[A-Z|0-9|a-z|]+-[A-Z|0-9|a-z|]+" > $JIRA_IDS
+python ~/mytools/my_version_compare/baseline_jira_export.py $JIRA_IDS $REPORTS
+rm $JIRA_IDS
